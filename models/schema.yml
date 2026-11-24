@@ -7,7 +7,7 @@ models:
         tests:
           - not_null
           - positive_amounts
-          
+
   - name: bronze__customers
     description: "Bronze-layer customers model in schema bronze_layer."
     columns:
@@ -29,7 +29,8 @@ models:
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_match_regex:
-              regex: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+              arguments:
+                regex: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
           - dbt_expectations.expect_column_to_exist
 
   - name: fct_orders
@@ -43,20 +44,23 @@ models:
         description: "Foreign key to dim_customers."
         tests:
           - relationships:
-              to: ref('dim_customers')
-              field: customer_sk
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
           - dbt_expectations.expect_column_values_to_not_be_null
       - name: total_amount
         description: "Total order value in currency."
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
-              min_value: -1
-              strictly: true
+              arguments:
+                min_value: -1
+                strictly: true
 
   - name: fct_order_items
     columns:
       - name: product_sk
         tests:
           - relationships:
-              to: ref('dim_products')
-              field: product_sk
+              arguments:
+                to: ref('dim_products')
+                field: product_sk
